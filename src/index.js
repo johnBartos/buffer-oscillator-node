@@ -16,28 +16,20 @@ recorder.ondataavailable = (e) => {
 recorder.onstop = (e) => {
   const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
   const reader = new FileReader();
+  const source = ctx.createBufferSource()
   reader.addEventListener('loadend', () => {
-    const buffer = new Uint8Array(reader.result);
-    const floatArray = new Float32Array(buffer);
-    console.log(floatArray);
+    ctx.decodeAudioData(reader.result).then((buffer) => {
+      console.log(buffer)
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start();
+    });
   });
   reader.readAsArrayBuffer(blob);
-  // const href = URL.createObjectURL(blob);
-  // const a = document.createElement('a');
-  // a.href = href;
-  // a.download = 'foo.ogg';
-  // a.click();
-
 };
 
 
 osc.connect(recorderDest);
-// recorder.connect(ctx.destination);
-
-// const buffer = createBuffer(2, frameCount, audioCtx.sampleRate);
-const buffer = ctx.createBuffer(2, 22050, 44100);
-buffer.buffer = recorder.stream;
-
 recorder.start();
 osc.start(0);
 
@@ -45,3 +37,12 @@ setTimeout(() => {
   osc.stop();
   recorder.stop();
 }, 100);
+
+
+function download(blob) {
+  const href = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = 'foo.ogg';
+  a.click();
+}
