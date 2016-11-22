@@ -14,7 +14,7 @@ recorder.ondataavailable = (e) => {
   chunks.push(e.data);
 };
 recorder.onstop = (e) => {
-  const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+  const blob = new Blob(chunks, { 'type' : 'audio/wav' });
   const reader = new FileReader();
   const source = ctx.createBufferSource()
   reader.addEventListener('loadend', () => {
